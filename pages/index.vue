@@ -12,7 +12,7 @@
     </div>
     <div class="row log text-center">
       <div class="col-lg-12">
-        <nuxt-link to="/login">
+        <nuxt-link to="/log/login">
           <button class="btn btn-success">Login</button>
         </nuxt-link>
       </div>
