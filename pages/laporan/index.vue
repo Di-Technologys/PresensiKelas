@@ -1,221 +1,204 @@
-<!-- <template>
-  <div class="container-fluid atas mt-3">
-    <div class="row pt-3">
-      <div class="col-lg">
-        <nuxt-link to="/halamanUtama">
-          <button class="btn btn-dark bck mb-5 border-white">Kembali</button>
-        </nuxt-link>
-      </div>
-    </div>
-    <div class="row text-center bebas">
-      <div class="col-lg-12 text-white">
-        <h3>Presensi Bulanan</h3>
-      </div>
-    </div>
-    <form @submit.prevent="getPresensi">
-      <div class="row justify-content-end pb-5">
-        <div class="col-lg-2">
-          <p style="color: white;">Start Date</p>
-          <input v-model="tgl_awal" type="date" class="form-control form-control-lg">
-        </div>
-        <div class="col-lg-2 ">
-          <p style="color: white;">End Date</p>
-          <input v-model="tgl_akhir" type="date" class="form-control form-control-lg">
-        </div>
-        <div class="col-lg-1 justify-content-center align-items-end ">
-          <button type="submit" class="btn btn-primary mt-5">Cari</button>
-        </div>
-      </div>
-    </form>
-    <div class="container pp">
-      <table border="1" style="width:100%; text-align: center; color: white;" class="border-white">
-        <tr class="b">
-          <th>No</th>
-          <th>Tanggal</th>
-          <th>Nama</th>
-          <th>Keterangan</th>
-          <th>Kelas</th>
-        </tr>
-        <tr v-for="(visitor, i) in visitors" :key="i">
-          <td>{{ i + 1 }}</td>
-          <td>{{ visitor.tanggal }}</td>
-          <td>{{ visitor.siswa.nama }}</td>
-          <td>{{ visitor.keterangan.nama }}</td>
-          <td>{{ visitor.siswa.tingkat }} {{ visitor.jurusan.nama }} {{ visitor.siswa.kelas }}</td>
-        </tr>
-      </table>
-    </div>
-  </div>
-</template>
-
-<script setup>
-const supabase = useSupabaseClient()
-const visitors = ref([])
-const tgl_awal = ref('')
-const tgl_akhir = ref('')
-
-const getPresensi = async () => {
-  if (tgl_awal.value && tgl_akhir.value) {
-    let { data, error } = await supabase
-      .from('presensi')
-      .select('*,keterangan(*),siswa(*),jurusan(*)')
-      .gte('tanggal', tgl_awal.value)
-      .lte('tanggal', tgl_akhir.value)
-    if (data) visitors.value = data
-    if (error) console.error(error)
-  } else {
-    let { data, error } = await supabase
-      .from('presensi')
-      .select('*,keterangan(*),siswa(*),jurusan(*)')
-    if (data) visitors.value = data
-    if (error) console.error(error)
-  }
-}
-
-const getJurusan = async () => {
-  const { data } = await supabase
-    .from('jurusan')
-    .select('*')
-  if (data) {
-
-  }
-}
-const getJuru = async () => {
-  const { data } = await supabase
-    .from('siswa')
-    .select('*,jurusan(nama)')
-    .eq("jurusan", 1)
-  if (data) {
-    console.log(data)
-  }
-}
-onMounted(() => {
-  getPresensi()
-  getJurusan()
-  // getJuru()
-})
-</script>
-
-<style scoped>
-.bck {
-  text-decoration: none;
-}
-
-.bebas {
-  padding-top: 50px;
-}
-
-.atas {
-  min-height: 10rem;
-  background: rgb(26, 26, 26);
-}
-
-td {
-  border-bottom: 3px solid #fff;
-  padding: 10px;
-}
-
-tr.b {
-  border-bottom: 2px solid #fff;
-  background: gray;
-}
-
-.pp {
-  padding-bottom: 250px;
-}
-</style> -->
-
 <template>
   <div class="container-fluid atas mt-3">
     <div class="row pt-3">
-      <div class="col-lg">
+      <div class="col-12 col-sm-6 col-md-3 mb-2">
         <nuxt-link to="/halamanUtama">
-          <button class="btn btn-dark bck mb-5 border-white">Kembali</button>
+          <button class="btn btn-dark bck m-2 border-white w-100">Kembali</button>
         </nuxt-link>
       </div>
+      <div class="col-12 col-sm-6 col-md-3 mb-2">
+        <button class="btn btn-success m-2 w-100" @click="printPage">Print</button>
+      </div>
+      <div class="col-12 col-md-3 mb-2">
+        <button class="btn btn-info m-2 w-100" @click="downloadPDF">Download PDF</button>
+      </div>
     </div>
-    <div class="row text-center bebas">
-      <div class="col-lg-12 text-white">
-        <h3>Presensi Bulanan</h3>
+    <div class="row text-center bebas pb-5">
+      <div class="col-12 text-white">
+        <!-- <h3>Presensi</h3> -->
       </div>
     </div>
     <form @submit.prevent="getPresensi">
       <div class="row justify-content-end pb-5">
-        <div class="col-lg-2">
-          <p style="color: white;">Start Date</p>
+        <div class="col-12 col-md-3 mb-2">
+          <p style="color: white; text-align: center;">Tanggal</p>
           <input v-model="tgl_awal" type="date" class="form-control form-control-lg">
         </div>
-        <div class="col-lg-2">
-          <p style="color: white;">End Date</p>
-          <input v-model="tgl_akhir" type="date" class="form-control form-control-lg">
+        <div class="col-12 col-md-3 mb-2">
+          <p style="color: white; text-align: center;">Kelas</p>
+          <input v-model="tingkat" type="number" class="form-control form-control-lg" placeholder="Tingkat">
         </div>
-        <div class="col-lg-1 justify-content-center align-items-end">
-          <button type="submit" class="btn btn-primary mt-5">Cari</button>
+        <div class="col-12 col-md-3 mb-2">
+          <p style="color: white; text-align: center;">Jurusan</p>
+          <select v-model="jurusan" class="form-control form-control-lg">
+            <option value="">Pilih Jurusan</option>
+            <option v-for="option in jurusanOptions" :key="option.id" :value="option.nama">
+              {{ option.nama }}
+            </option>
+          </select>
+        </div>
+        <div class="col-12 col-md-3 mb-2">
+          <p style="color: white; text-align: center;">No Kelas</p>
+          <input v-model="kelas" type="number" class="form-control form-control-lg" placeholder="Kelas">
+        </div>
+        <div class="col-12 col-md-3 justify-content-center align-items-end mb-2">
+          <button type="submit" class="btn btn-primary mt-5 w-100">Cari</button>
         </div>
       </div>
     </form>
-    <div class="container pp">
-      <table border="1" style="width:100%; text-align: center; color: white;" class="border-white">
-        <tr class="b">
-          <th>No</th>
-          <th>Tanggal</th>
-          <th>Nama</th>
-          <th>Keterangan</th>
-          <th>Kelas</th>
-        </tr>
-        <tr v-for="(visitor, i) in visitors" :key="i">
-          <td>{{ i + 1 }}</td>
-          <td>{{ visitor.tanggal }}</td>
-          <td>{{ visitor.siswa.nama }}</td>
-          <td>{{ visitor.keterangan.nama }}</td>
-          <td>{{ visitor.siswa.tingkat }} {{ visitor.jurusan.nama }} {{ visitor.siswa.kelas }}</td>
-        </tr>
-      </table>
+
+    <!-- Konten yang akan di print -->
+    <div class="container pp" id="content">
+      <!-- Bagian judul presensi, kelas, dan tanggal -->
+      <div class="text-center mb-5 text-light">
+        <h1>Presensi</h1>
+        <p>Kelas: {{ tingkat }} {{ jurusan }} {{ kelas }}</p>
+        <p>Tanggal: {{ tgl_awal || today }}</p>
+      </div>
+
+      <div class="table-responsive">
+        <table id="presensiTable" class="table table-bordered text-white">
+          <thead>
+            <tr class="b">
+              <th>No</th>
+              <th>Tanggal</th>
+              <th>Nama</th>
+              <th>Keterangan</th>
+              <th>Kelas</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(visitor, i) in filteredVisitors" :key="i">
+              <td>{{ i + 1 }}</td>
+              <td>{{ visitor.tanggal }}</td>
+              <td>{{ visitor.siswa?.nama || 'Tidak ada data' }}</td>
+              <td>{{ visitor.keterangan?.nama || 'Tidak ada data' }}</td>
+              <td>{{ visitor.siswa?.tingkat || 'N/A' }} {{ visitor.jurusan?.nama || 'N/A' }} {{ visitor.siswa?.kelas || 'N/A' }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup>
-const supabase = useSupabaseClient()
-const visitors = ref([])
-const tgl_awal = ref('')
-const tgl_akhir = ref('')
+import { ref, computed, onMounted } from 'vue';
+import { createClient } from '@supabase/supabase-js';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 
-// Function to get today's date in YYYY-MM-DD format
 const getTodayDate = () => {
-  const today = new Date()
-  const yyyy = today.getFullYear()
-  const mm = String(today.getMonth() + 1).padStart(2, '0') // Months start from 0!
-  const dd = String(today.getDate()).padStart(2, '0')
-  return `${yyyy}-${mm}-${dd}`
-}
+  const today = new Date();
+  const yyyy = today.getFullYear();
+  const mm = String(today.getMonth() + 1).padStart(2, "0");
+  const dd = String(today.getDate()).padStart(2, "0");
+  return `${yyyy}-${mm}-${dd}`;
+};
 
-// Fetch presensi data
+const supabaseUrl = 'https://lagwvzegjurpjhjvbwca.supabase.co';
+const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxhZ3d2emVnanVycGpoanZid2NhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjQwMzMyNTIsImV4cCI6MjAzOTYwOTI1Mn0.XrdQtFfHp4mxuJjtxE810KZnsWIS47wyc5uYY4r_KmQ';
+const supabase = createClient(supabaseUrl, supabaseAnonKey);
+
+const visitors = ref([]);
+const tgl_awal = ref("");
+const tingkat = ref("");
+const jurusan = ref("");
+const kelas = ref("");
+const jurusanOptions = ref([]);
+const today = getTodayDate();
+
 const getPresensi = async () => {
-  // If date range is provided, search within that range
-  if (tgl_awal.value && tgl_akhir.value) {
-    let { data, error } = await supabase
-      .from('presensi')
-      .select('*,keterangan(*),siswa(*),jurusan(*)')
-      .gte('tanggal', tgl_awal.value)
-      .lte('tanggal', tgl_akhir.value)
-    if (data) visitors.value = data
-    if (error) console.error(error)
-  } else {
-    // Default to fetching today's data
-    const today = getTodayDate()
-    let { data, error } = await supabase
-      .from('presensi')
-      .select('*,keterangan(*),siswa(*),jurusan(*)')
-      .eq('tanggal', today)
-    if (data) visitors.value = data
-    if (error) console.error(error)
+  try {
+    let query = supabase
+      .from("presensi")
+      .select("tanggal, siswa(id, nama, tingkat, kelas), keterangan(nama), jurusan(nama)");
+
+    if (tgl_awal.value) {
+      query = query.eq("tanggal", tgl_awal.value);
+    } else {
+      query = query.eq("tanggal", today);
+    }
+
+    console.log("Query yang dikirim:", query);
+
+    const { data, error } = await query;
+
+    if (error) {
+      console.error("Error fetching data:", error);
+    } else {
+      visitors.value = data || [];
+      console.log("Data fetched:", visitors.value); 
+    }
+  } catch (error) {
+    console.error("Unexpected error:", error);
   }
-}
+};
+
+const filteredVisitors = computed(() => {
+  return visitors.value.filter((visitor) => {
+    const matchTanggal = !tgl_awal.value || visitor.tanggal === tgl_awal.value;
+    const matchTingkat = !tingkat.value || visitor.siswa?.tingkat === tingkat.value;
+    const matchJurusan = !jurusan.value || visitor.jurusan?.nama === jurusan.value;
+    const matchKelas = !kelas.value || visitor.siswa?.kelas === kelas.value;
+
+    return matchTanggal && matchTingkat && matchJurusan && matchKelas;
+  });
+});
+
+const printPage = () => {
+  window.print();
+};
+
+const downloadPDF = () => {
+  const content = document.getElementById('content');
+
+  if (!content) {
+    console.error("Element with id 'content' not found.");
+    return;
+  }
+
+  html2canvas(content).then((canvas) => {
+    const pdf = new jsPDF();
+    const imgData = canvas.toDataURL('image/png');
+    const imgWidth = 190; // Adjust based on PDF page width
+    const imgHeight = (canvas.height * imgWidth) / canvas.width;
+    let heightLeft = imgHeight;
+
+    let position = 0;
+
+    pdf.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight);
+    heightLeft -= pdf.internal.pageSize.height;
+
+    while (heightLeft >= 0) {
+      position = heightLeft - imgHeight;
+      pdf.addPage();
+      pdf.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight);
+      heightLeft -= pdf.internal.pageSize.height;
+    }
+
+    pdf.save('presensi.pdf');
+  });
+};
+
+const getJurusanOptions = async () => {
+  try {
+    const { data, error } = await supabase.from("jurusan").select("*");
+
+    if (error) {
+      console.error("Error fetching jurusan data:", error);
+    } else {
+      jurusanOptions.value = data;
+    }
+  } catch (error) {
+    console.error("Unexpected error:", error);
+  }
+};
 
 onMounted(() => {
-  getPresensi()
-})
+  getPresensi();
+  getJurusanOptions();
+});
 </script>
 
 <style scoped>
@@ -228,7 +211,6 @@ onMounted(() => {
 }
 
 .atas {
-  min-height: 10rem;
   background: rgb(26, 26, 26);
 }
 
@@ -239,10 +221,82 @@ td {
 
 tr.b {
   border-bottom: 2px solid #fff;
-  background: gray;
+  background: rgb(0, 0, 0);
 }
 
-.pp {
-  padding-bottom: 250px;
+.table-responsive {
+  overflow-x: auto;
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 0 15px;
+  }
+}
+@media print {
+  body * {
+    visibility: hidden;
+  }
+
+  #content, #content * {
+    visibility: visible;
+  }
+
+  form, .btn, input, select, #navbar, .judul-non-print, h3 {
+    display: none !important;
+  }
+
+  th:nth-child(2), td:nth-child(2) {
+    display: none !important;
+  }
+
+  h1, p {
+    color: black;
+    text-align: center;
+  }
+
+  #content {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    padding: 20px;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    border: 2px solid black;
+  }
+
+  th, td {
+    border: 1px solid black;
+    padding: 8px;
+    text-align: center;
+  }
+
+  thead th {
+    border-bottom: 2px solid black;
+    background-color: #f2f2f2;
+  }
+
+  th {
+    background-color: #f2f2f2;
+  }
+}
+
+@media (max-width: 768px) {
+  .bebas {
+    padding-top: 20px;
+  }
+
+  .form-control-lg {
+    font-size: 14px; /* Sesuaikan ukuran font pada perangkat kecil */
+  }
+
+  .btn {
+    padding: 10px; /* Sesuaikan padding tombol */
+  }
 }
 </style>
